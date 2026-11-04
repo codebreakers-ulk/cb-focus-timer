@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Focus Timer | Codebreakers</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container">
+      <h1>Focus Timer</h1>
+      <p class="subtitle">Stay locked in during study sessions and coding sprints.</p>
+    </div>
+  </header>
+
+  <main class="container main-content">
+
+    <!-- Mode Selector Tabs -->
+    <div class="mode-tabs">
+      <button id="timerTabBtn" class="tab-btn active">Countdown Timer</button>
+      <button id="stopwatchTabBtn" class="tab-btn">Stopwatch</button>
+    </div>
+
+    <!-- Quick Preset Buttons (Countdown Mode Only) -->
+    <div id="presetsContainer" class="presets-container">
+      <!-- Preset buttons rendered dynamically from js/data.js -->
+    </div>
+
+    <!-- Main Display Stage -->
+    <section class="timer-stage">
+      <div class="timer-display" id="timeDisplay">25:00</div>
+      <div class="timer-status" id="timerStatus">Ready to focus</div>
+    </section>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button id="startPauseBtn" class="btn btn-primary">Start</button>
+      <button id="resetBtn" class="btn btn-outline">Reset</button>
+    </div>
+
+    <!-- Session History / Log -->
+    <section class="history-section">
+      <h3>Completed Sessions</h3>
+      <ul id="sessionList" class="session-list">
+        <li class="empty-log">No completed sessions logged yet. Finish a timer to record one!</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Built with Vanilla JS &bull; Maintained by <strong>Codebreakers</strong></p>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
