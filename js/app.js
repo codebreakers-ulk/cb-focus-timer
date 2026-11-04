@@ -5,6 +5,8 @@ let isRunning = false;
 let durationSeconds = 25 * 60; // 25 minutes default
 let remainingSeconds = durationSeconds;
 let stopwatchSeconds = 0;
+let lastTickTime = 0; // Date.now() at the last counted second
+let leftoverMs = 0; // Sub-second time carried over a pause
 
 // DOM Elements
 const timerTabBtn = document.getElementById("timerTabBtn");
@@ -51,6 +53,10 @@ function selectPreset(preset, btnElement) {
 function handleStartPause() {
   if (isRunning) {
     // Pause
+    tick(); // Count the seconds that passed since the last tick
+    if (!isRunning) return; // The timer finished during that tick
+
+    leftoverMs = Date.now() - lastTickTime;
     clearInterval(timerInterval);
     isRunning = false;
     startPauseBtn.textContent = "Resume";
@@ -61,25 +67,35 @@ function handleStartPause() {
     startPauseBtn.textContent = "Pause";
     timerStatus.textContent = currentMode === "timer" ? "Focusing..." : "Tracking time...";
 
-    timerInterval = setInterval(() => {
-      if (currentMode === "timer") {
-        if (remainingSeconds > 0) {
-          remainingSeconds--;
-          timeDisplay.textContent = formatTime(remainingSeconds);
-        } else {
-          // Timer Finished
-          clearInterval(timerInterval);
-          isRunning = false;
-          startPauseBtn.textContent = "Start";
-          timerStatus.textContent = "Session Complete! Well done.";
-          logSession("Completed Timer", durationSeconds);
-        }
-      } else {
-        // Stopwatch Mode
-        stopwatchSeconds++;
-        timeDisplay.textContent = formatTime(stopwatchSeconds);
-      }
-    }, 1000);
+    lastTickTime = Date.now() - leftoverMs;
+    leftoverMs = 0;
+    // Polling is cheap; tick() works out elapsed time from the clock, so delayed callbacks don't drift
+    timerInterval = setInterval(tick, 250);
+  }
+}
+
+// Apply whole seconds elapsed on the wall clock since the last tick
+function tick() {
+  const wholeSeconds = Math.floor((Date.now() - lastTickTime) / 1000);
+  if (wholeSeconds === 0) return;
+  lastTickTime += wholeSeconds * 1000; // Keep the sub-second remainder for the next tick
+
+  if (currentMode === "timer") {
+    remainingSeconds = Math.max(remainingSeconds - wholeSeconds, 0);
+    timeDisplay.textContent = formatTime(remainingSeconds);
+
+    if (remainingSeconds === 0) {
+      // Timer Finished
+      clearInterval(timerInterval);
+      isRunning = false;
+      startPauseBtn.textContent = "Start";
+      timerStatus.textContent = "Session Complete! Well done.";
+      logSession("Completed Timer", durationSeconds);
+    }
+  } else {
+    // Stopwatch Mode
+    stopwatchSeconds += wholeSeconds;
+    timeDisplay.textContent = formatTime(stopwatchSeconds);
   }
 }
 
@@ -87,6 +103,7 @@ function handleStartPause() {
 function handleReset() {
   clearInterval(timerInterval);
   isRunning = false;
+  leftoverMs = 0;
   startPauseBtn.textContent = "Start";
 
   if (currentMode === "timer") {
