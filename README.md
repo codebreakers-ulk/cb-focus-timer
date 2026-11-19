@@ -8,6 +8,8 @@ Built with **vanilla HTML, CSS, and JavaScript**. Hosted by **Codebreakers** to 
 
 ## Getting Started Locally
 
+Hello
+
 No installation or build tools needed.
 
 1. Fork and clone this repository:
